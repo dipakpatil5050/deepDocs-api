@@ -20,6 +20,5 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, async () => {
   console.log(`DeepDocs App API is running on port ${PORT}`);
-
   await connectToDatabase();
 });
