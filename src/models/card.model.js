@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
 const cardSchema = new mongoose.Schema(
@@ -6,32 +5,41 @@ const cardSchema = new mongoose.Schema(
     title: {
       type: String,
       trim: true,
+      required: true,
+      index: true,
     },
-    content: {
+    description: {
       type: String,
-    },
-    createdAt: {
-      type: new Date(),
-    },
-    updatedAt: {
-      type: new Date(),
-    },
-    backgroundColor: {
-      type: String,
+      required: true,
     },
     status: {
       type: String,
+      enum: ["pending", "completed", "in-progress"],
+      default: "pending",
+      index: true,
     },
-    user: {
+    backgroundColor: {
+      type: String,
+      default: "#ffffff",
+    },
+    dueDate: {
+      type: Date,
+      index: true,
+    },
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
+
+cardSchema.index({ userId: 1, status: 1 });
 
 const Card = mongoose.model("Card", cardSchema);
 export default Card;

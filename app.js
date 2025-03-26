@@ -4,6 +4,8 @@ import { NODE_ENV, PORT } from "./src/config/env.js";
 import errorMiddleware from "./src/middlewares/error.middleware.js";
 import authRouter from "./src/routes/auth.routes.js";
 import connectToDatabase from "./src/database/mongodb.js";
+import userRouter from "./src/routes/user.routes.js";
+import cardRouter from "./src/routes/cardRouter.js";
 
 const app = express();
 
@@ -16,6 +18,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/cards", cardRouter);
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
