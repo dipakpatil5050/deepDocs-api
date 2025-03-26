@@ -1,13 +1,17 @@
 import express from "express";
 import cors from "cors";
-import { PORT } from "./src/config/env.js";
+import { NODE_ENV, PORT } from "./src/config/env.js";
 import errorMiddleware from "./src/middlewares/error.middleware.js";
 import authRouter from "./src/routes/auth.routes.js";
 import connectToDatabase from "./src/database/mongodb.js";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: NODE_ENV === "production" ? "https://keepdocument.vercel.app" : "*",
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -18,7 +22,13 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to DeepDocs Note App" });
 });
 
+app.get("*", (req, res) => {
+  res.json({ message: "Page not found", statusCode: 404 });
+});
+
 app.listen(PORT, async () => {
   console.log(`DeepDocs App API is running on port ${PORT}`);
   await connectToDatabase();
 });
+
+// live deploye link of API : https://deepdocs-api.onrender.com

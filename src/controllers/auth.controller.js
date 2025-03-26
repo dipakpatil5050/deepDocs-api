@@ -37,13 +37,14 @@ export const register = async (req, res, next) => {
         expiresIn: JWT_EXPIRED_IN,
       }
     );
+
     await session.commitTransaction();
     session.endSession();
 
     return successResponse(
       res,
       { token, user: newUser[0] },
-      "User Created Successfully",
+      "User register successfully!",
       201
     );
   } catch (error) {
