@@ -6,6 +6,7 @@ import authRouter from "./src/routes/auth.routes.js";
 import connectToDatabase from "./src/database/mongodb.js";
 import userRouter from "./src/routes/user.routes.js";
 import cardRouter from "./src/routes/cardRouter.js";
+import "./src/jobs/trashCleanupJob.js";
 
 const app = express();
 

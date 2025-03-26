@@ -6,7 +6,7 @@ const cardSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: true,
-      index: true,
+      index: "text",
     },
     description: {
       type: String,
@@ -18,12 +18,39 @@ const cardSchema = new mongoose.Schema(
       default: "pending",
       index: true,
     },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "medium",
+      index: true,
+    },
     backgroundColor: {
       type: String,
       default: "#ffffff",
     },
+    backgroundImage: {
+      type: String,
+      default: "",
+    },
     dueDate: {
       type: Date,
+      index: true,
+    },
+    startDate: {
+      type: Date,
+      index: true,
+    },
+    endDate: {
+      type: Date,
+      index: true,
+    },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
       index: true,
     },
     userId: {
