@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: NODE_ENV === "production" ? "https://keepdocument.vercel.app" : "*",
+    origin: NODE_ENV === "production" ? "*" : "*",
   })
 );
 app.use(express.json());

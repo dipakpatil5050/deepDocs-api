@@ -153,17 +153,39 @@ export const moveToTrash = async (req, res, next) => {
   }
 };
 
+// export const getTrashCards = async (req, res, next) => {
+//   try {
+//     const { page = 1, limit = 10 } = req.query;
+
+//     const cards = await Card.find({
+//       userId: req.user._id,
+//       deletedAt: { $ne: null },
+//     })
+//       .sort({ deletedAt: -1 })
+//       .skip((page - 1) * limit)
+//       .limit(parseInt(limit));
+
+//     return successResponse(res, cards, "Trash cards fetched successfully", 200);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const getTrashCards = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    let { page = 1, limit = 10 } = req.query;
+
+    page = Math.max(1, parseInt(page)); // Ensure page is at least 1
+    limit = Math.max(1, parseInt(limit)); // Ensure limit is at least 1
 
     const cards = await Card.find({
       userId: req.user._id,
-      deletedAt: { $ne: null },
+      deletedAt: { $ne: null }, // Ensures only trashed cards are fetched
     })
-      .sort({ deletedAt: -1 })
+      .sort({ deletedAt: -1 }) // Show recently deleted first
       .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      .limit(limit)
+      .select("-__v"); // Exclude MongoDB version field for cleaner data
 
     return successResponse(res, cards, "Trash cards fetched successfully", 200);
   } catch (error) {
