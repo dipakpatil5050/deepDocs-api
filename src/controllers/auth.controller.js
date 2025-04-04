@@ -138,7 +138,13 @@ export const forgotPassword = async (req, res) => {
       html: EmailPasswordResetTemplatev(resetUrl),
     };
 
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error sending email:", error);
+      } else {
+        console.log("Password reset email sent:", info.response);
+      }
+    });
 
     res.status(200).json({ message: "Password reset link sent to your email" });
   } catch (err) {
