@@ -3,7 +3,7 @@ import { successResponse } from "../utils/responseHelper.js";
 
 export const createCard = async (req, res, next) => {
   try {
-    const { title, description, backgroundColor } = req.body;
+    const { title = "", description = "", backgroundColor } = req.body;
 
     // if (!title || !description) {
     //   const error = new Error("Title and Description are required.");
