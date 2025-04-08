@@ -5,11 +5,11 @@ export const createCard = async (req, res, next) => {
   try {
     const { title, description, backgroundColor } = req.body;
 
-    if (!title || !description) {
-      const error = new Error("Title and Description are required.");
-      error.statusCode = 400;
-      throw error;
-    }
+    // if (!title || !description) {
+    //   const error = new Error("Title and Description are required.");
+    //   error.statusCode = 400;
+    //   throw error;
+    // }
 
     const card = await Card.create({
       title,

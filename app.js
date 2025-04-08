@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.json({ message: "Page not found", statusCode: 404 });
+  res.json({ message: "Route not found", statusCode: 404 });
 });
 
 app.listen(PORT, async () => {

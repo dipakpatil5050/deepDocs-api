@@ -5,7 +5,6 @@ const cardSchema = new mongoose.Schema(
     title: {
       type: String,
       trim: true,
-      required: true,
       index: "text",
     },
     description: {
