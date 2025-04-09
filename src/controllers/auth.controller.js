@@ -149,11 +149,9 @@ export const forgotPassword = async (req, res) => {
       throw new Error("Failed to send email");
     }
 
-    console.error("node mailer error");
-
     res.status(200).json({ message: "Password reset link sent to your email" });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Internal Server error" });
   }
 };
 
