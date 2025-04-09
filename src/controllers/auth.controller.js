@@ -11,6 +11,7 @@ import {
   MY_EMAIL_PASSWORD,
 } from "../config/env.js";
 import { successResponse } from "../utils/responseHelper.js";
+import { EmailPasswordResetTemplate } from "../utils/EmailTemplate.js";
 
 export const register = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -111,7 +112,7 @@ export const forgotPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ message: "User Does not Exist" });
     }
 
     const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, {
@@ -124,10 +125,12 @@ export const forgotPassword = async (req, res) => {
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      secure: true,
       auth: {
         user: MY_EMAIL,
         pass: MY_EMAIL_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
@@ -135,16 +138,18 @@ export const forgotPassword = async (req, res) => {
       from: MY_EMAIL,
       to: email,
       subject: "Password Reset Request",
-      html: EmailPasswordResetTemplatev(resetUrl),
+      html: EmailPasswordResetTemplate(resetUrl),
     };
 
-    await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("Error sending email:", error);
-      } else {
-        console.log("Password reset email sent:", info.response);
-      }
-    });
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log("Password reset email sent:", info.response);
+    } catch (error) {
+      console.log("Error sending email:", error);
+      throw new Error("Failed to send email");
+    }
+
+    console.error("node mailer error");
 
     res.status(200).json({ message: "Password reset link sent to your email" });
   } catch (err) {

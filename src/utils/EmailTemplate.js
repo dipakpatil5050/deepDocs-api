@@ -1,89 +1,91 @@
-const EmailPasswordResetTemplatev = (resetUrl) => {
+export const EmailPasswordResetTemplate = (resetUrl) => {
   return `
     <html>
       <head>
         <style>
           body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f8;
           }
-          .email-container {
-            width: 100%;
-            background-color: #f4f4f9;
-            padding: 20px 0;
-          }
-          .email-content {
-            background-color: #ffffff;
+          .container {
             max-width: 600px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 40px;
+            color: #2c3e50;
           }
-          .email-header {
+          .header {
             text-align: center;
-            margin-bottom: 20px;
+            padding-bottom: 20px;
           }
-          .email-header h1 {
-            color: #3a7bfd;
+          .header h1 {
+            margin: 0;
             font-size: 24px;
+            color: #1a202c;
           }
-          .email-body {
+          .logo {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 12px;
+          }
+          .content {
             font-size: 16px;
-            line-height: 1.5;
-            color: #333;
-            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #4a5568;
           }
-          .email-footer {
-            font-size: 14px;
+          .button-wrapper {
             text-align: center;
-            color: #888;
+            margin: 30px 0;
           }
           .button {
-            display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 30px;
             background-color: #3a7bfd;
-            color: #fff;
-            font-size: 16px;
+            color: #fff !important;
             text-decoration: none;
-            border-radius: 5px;
-            text-align: center;
-            margin-top: 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
           }
           .button:hover {
-            background-color: #2c64d6;
+            background-color: #255efc;
           }
-          .footer-text {
-            color: #aaa;
-            font-size: 12px;
+          .footer {
             text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
             margin-top: 30px;
           }
         </style>
       </head>
       <body>
-        <div class="email-container">
-          <div class="email-content">
-            <div class="email-header">
-              <h1>Password Reset Request</h1>
-            </div>
-            <div class="email-body">
-              <p>Hi there,</p>
-              <p>We received a request to reset your password for your account. If you didn't request a password reset, please ignore this email.</p>
-              <p>To reset your password, click the button below:</p>
-              <a href="${resetUrl}" class="button">Reset Password</a>
-              <p>If you have any questions or need assistance, feel free to <a href="mailto:support@notetakingapp.com">contact our support team</a>.</p>
-            </div>
-            <div class="email-footer">
-              <p>&copy; 2025 Note Taking App. All rights reserved.</p>
-              <p class="footer-text">If you didn't request this, please disregard this email.</p>
-            </div>
+        <div class="container">
+          <div class="header">
+          <h4>DeepDocs</h4>
+            <h1>Password Reset</h1>
+          </div>
+          <div class="content">
+            <p>Hi there,</p>
+            <p>We received a request to reset your password for your <strong>Deepdocs App</strong> account powered by AI.</p>
+            <p>If you made this request, click the button below to reset your password. If not, feel free to ignore this email — your password will remain unchanged.</p>
+          </div>
+          <div class="button-wrapper">
+            <a href="${resetUrl}" class="button">Reset My Password</a>
+          </div>
+          <div class="content">
+            <p>This link will expire in 24 hours. For security reasons, do not share this email with anyone.</p>
+          </div>
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Deepdocs — Take Management App Powered by AI.</p>
           </div>
         </div>
       </body>
     </html>
-    `;
+  `;
 };
