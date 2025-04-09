@@ -138,7 +138,7 @@ export const forgotPassword = async (req, res) => {
       from: MY_EMAIL,
       to: email,
       subject: "Password Reset Request",
-      html: EmailPasswordResetTemplate(resetUrl),
+      html: `<h2> Hello Dear, here is the your password reset link ${resetUrl}</h2>`,
     };
 
     try {
