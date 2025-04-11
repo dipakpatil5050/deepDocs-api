@@ -14,7 +14,7 @@ authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/logout", logout);
 authRouter.post("/forget-password", forgotPassword);
-authRouter.post("/reset-Password/:resetToken", resetPassword);
+authRouter.post("/reset-Password", resetPassword);
 authRouter.post("/change-password", changePassword);
 
 export default authRouter;

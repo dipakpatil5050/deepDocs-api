@@ -121,8 +121,6 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `${CLIENT_URL}/reset-password/${resetToken}`;
 
-    console.log("password reset token : ", resetToken);
-
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
