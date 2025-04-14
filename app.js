@@ -5,8 +5,10 @@ import errorMiddleware from "./src/middlewares/error.middleware.js";
 import authRouter from "./src/routes/auth.routes.js";
 import connectToDatabase from "./src/database/mongodb.js";
 import userRouter from "./src/routes/user.routes.js";
-import cardRouter from "./src/routes/cardRouter.js";
+import cardRouter from "./src/routes/card.routes.js";
 import "./src/jobs/trashCleanupJob.js";
+import { getTrashCards } from "./src/controllers/card.controller.js";
+
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/cards", cardRouter);
@@ -28,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.json({ message: "Route not found", statusCode: 404 });
+  res.json({ message: "Route not found" });
 });
 
 app.listen(PORT, async () => {
