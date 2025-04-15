@@ -2,13 +2,11 @@ import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import {
   CLIENT_URL,
   JWT_EXPIRED_IN,
   JWT_SECRET,
   MY_EMAIL,
-  MY_EMAIL_PASSWORD,
 } from "../config/env.js";
 import { successResponse } from "../utils/responseHelper.js";
 import { EmailPasswordResetTemplate } from "../utils/EmailTemplate.js";

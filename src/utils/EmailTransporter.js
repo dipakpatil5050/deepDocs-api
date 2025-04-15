@@ -1,4 +1,5 @@
-import { MY_EMAIL, MY_EMAIL_PASSWORD } from "../config/env";
+import nodemailer from "nodemailer";
+import { MY_EMAIL, MY_EMAIL_PASSWORD } from "../config/env.js";
 
 export const createTransporter = () => {
   return nodemailer.createTransport({
