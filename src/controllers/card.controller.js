@@ -175,20 +175,21 @@ export const getTrashCards = async (req, res, next) => {
   try {
     let { page = 1, limit = 10 } = req.query;
 
-    page = Math.max(1, parseInt(page)); // Ensure page is at least 1
-    limit = Math.max(1, parseInt(limit)); // Ensure limit is at least 1
+    page = Math.max(1, parseInt(page));
+    limit = Math.max(1, parseInt(limit));
 
     const cards = await Card.find({
       userId: req.user._id,
-      deletedAt: { $ne: null }, // Ensures only trashed cards are fetched
+      deletedAt: { $ne: null },
     })
-      .sort({ deletedAt: -1 }) // Show recently deleted first
+      .sort({ deletedAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .select("-__v"); // Exclude MongoDB version field for cleaner data
+      .select("-__v");
 
     return successResponse(res, cards, "Trash cards fetched successfully", 200);
   } catch (error) {
+    console.log("issue in get trash items ", error);
     next(error);
   }
 };

@@ -7,8 +7,6 @@ import connectToDatabase from "./src/database/mongodb.js";
 import userRouter from "./src/routes/user.routes.js";
 import cardRouter from "./src/routes/card.routes.js";
 import "./src/jobs/trashCleanupJob.js";
-import { getTrashCards } from "./src/controllers/card.controller.js";
-
 
 const app = express();
 
@@ -19,7 +17,6 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);

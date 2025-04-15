@@ -12,6 +12,7 @@ import {
 } from "../config/env.js";
 import { successResponse } from "../utils/responseHelper.js";
 import { EmailPasswordResetTemplate } from "../utils/EmailTemplate.js";
+import { createTransporter } from "../utils/EmailTransporter.js";
 
 export const register = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -19,6 +20,12 @@ export const register = async (req, res, next) => {
 
   try {
     const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      const error = new Error("Name, email, and password are required");
+      error.statusCode = 400;
+      throw error;
+    }
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -66,16 +73,17 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      const error = new Error("Email and password are required");
+      error.statusCode = 400;
+      throw error;
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
-      const error = new Error("User not found");
-      error.statusCode = 404;
-      throw error;
-    }
-    if (!user) {
-      const error = new Error("User not Found");
-      error.statusCode = 404;
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
       throw error;
     }
 
@@ -107,12 +115,24 @@ export const logout = async (req, res, next) => {
 };
 
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-
   try {
+    const { email } = req.body;
+
+    if (!email) {
+      const error = new Error("Email is required");
+      error.statusCode = 400;
+      throw error;
+    }
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(400).json({ message: "User Does not Exist" });
+      logger.info(`Password reset requested for non-existent email: ${email}`);
+      return successResponse(
+        res,
+        {},
+        "If the email exists, a reset link has been sent",
+        200
+      );
     }
 
     const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, {
@@ -121,35 +141,26 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `${CLIENT_URL}/reset-password/${resetToken}`;
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: MY_EMAIL,
-        pass: MY_EMAIL_PASSWORD,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
+    const transporter = createTransporter();
     const mailOptions = {
       from: MY_EMAIL,
       to: email,
-      subject: "Password Reset Request",
+      subject: "Password Reset Request from Deepdocs",
       html: EmailPasswordResetTemplate(resetUrl),
     };
 
-    try {
-      const info = await transporter.sendMail(mailOptions);
-      console.log("Password reset email sent:", info.response);
-    } catch (error) {
-      console.log("Error sending email:", error);
-      throw new Error("Failed to send email");
-    }
+    await transporter.sendMail(mailOptions);
+    logger.info(`Password reset email sent to: ${email}`);
 
-    res.status(200).json({ message: "Password reset link sent to your email" });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server error" });
+    return successResponse(
+      res,
+      {},
+      "Password reset link sent to your email",
+      200
+    );
+  } catch (error) {
+    logger.error(`Error in forgotPassword: ${error.message}`);
+    next(error);
   }
 };
 
@@ -171,7 +182,8 @@ export const resetPassword = async (req, res) => {
 
     res.status(200).json({ message: "Password successfully reset" });
   } catch (err) {
-    res.status(500).json({ message: "Invalid or expired token" });
+    // res.status(500).json({ message: "Invalid or expired token" });
+    next(err);
   }
 };
 
@@ -186,17 +198,28 @@ export const changePassword = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
+
     if (!isMatch) {
-      return res.status(400).json({ message: "Current password is incorrect" });
+      const error = new Error("Current password is incorrect");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (await bcrypt.compare(newPassword, user.password)) {
+      const error = new Error(
+        "New password must be different from current password"
+      );
+      error.statusCode = 400;
+      throw error;
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
     user.password = hashedPassword;
     await user.save();
 
     res.status(200).json({ message: "Password successfully changed" });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    logger.error(`Error in changePassword: ${err.message}`);
+    next(err);
   }
 };
