@@ -18,7 +18,7 @@ cardRouter.post("/", authorize, createCard);
 cardRouter.get("/", authorize, getCards);
 
 cardRouter.delete("/trash/empty", authorize, emptyTrash);
-cardRouter.get("/trash", getTrashCards);
+cardRouter.get("/trash", authorize, getTrashCards);
 
 cardRouter.get("/:id", authorize, getCard);
 cardRouter.put("/:id", authorize, updateCard);
