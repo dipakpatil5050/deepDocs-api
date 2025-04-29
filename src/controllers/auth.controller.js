@@ -8,9 +8,11 @@ import {
   JWT_SECRET,
   MY_EMAIL,
 } from "../config/env.js";
-import { successResponse } from "../utils/responseHelper.js";
+import { errorResponse, successResponse } from "../utils/responseHelper.js";
 import { EmailPasswordResetTemplate } from "../utils/EmailTemplate.js";
 import { createTransporter } from "../utils/EmailTransporter.js";
+import { oauth2Client } from "../config/googleAuth.js";
+import axios from "axios";
 
 export const register = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -33,6 +35,7 @@ export const register = async (req, res, next) => {
     }
 
     // Hash Password
+
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
 
@@ -67,6 +70,51 @@ export const register = async (req, res, next) => {
   }
 };
 
+export const LoginWithGoogle = async (req, res, next) => {
+  try {
+    const { code } = req.query;
+    if (!code) {
+      return errorResponse(res, "Authorization code is required", 400);
+    }
+
+    const googleRes = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(googleRes.tokens);
+
+    const UserRes = await axios.get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`,
+      {
+        headers: {
+          Authorization: `Bearer ${googleRes.tokens.access_token}`,
+        },
+      }
+    );
+
+    const { email, name, picture } = UserRes.data;
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        profilePicture: picture,
+      });
+    } else {
+      if (user.profilePicture !== picture) {
+        user.profilePicture = picture;
+        await user.save();
+      }
+    }
+
+    const token = jwt.sign({ userId: user._id, name: user.name }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRED_IN,
+    });
+
+    return successResponse(res, { token, user }, "Login Successfully!", 200);
+  } catch (error) {
+    console.error("Google login error:", error);
+    next(error);
+  }
+};
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -96,7 +144,6 @@ export const login = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRED_IN,
     });
-
     return successResponse(res, { token, user }, "Login Successfully", 200);
   } catch (error) {
     next(error);
@@ -124,7 +171,7 @@ export const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      logger.info(`Password reset requested for non-existent email: ${email}`);
+      console.info(`Password reset requested for non-existent email: ${email}`);
       return successResponse(
         res,
         {},
@@ -143,21 +190,21 @@ export const forgotPassword = async (req, res) => {
     const mailOptions = {
       from: MY_EMAIL,
       to: email,
-      subject: "Password Reset Request from Deepdocs",
+      subject: "Password Reset Request",
       html: EmailPasswordResetTemplate(resetUrl),
     };
 
     await transporter.sendMail(mailOptions);
-    logger.info(`Password reset email sent to: ${email}`);
+    console.info(`Password reset email sent to: ${email}`);
 
     return successResponse(
       res,
       {},
-      "Password reset link sent to your email",
+      "Password reset link sent to your registred email",
       200
     );
   } catch (error) {
-    logger.error(`Error in forgotPassword: ${error.message}`);
+    console.error(`Error in forgotPassword: ${error.message}`);
     next(error);
   }
 };
@@ -217,7 +264,7 @@ export const changePassword = async (req, res) => {
 
     res.status(200).json({ message: "Password successfully changed" });
   } catch (err) {
-    logger.error(`Error in changePassword: ${err.message}`);
+    console.error(`Error in changePassword: ${err.message}`);
     next(err);
   }
 };

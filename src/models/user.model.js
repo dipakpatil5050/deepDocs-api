@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minLength: 6,
     },
+    profilePicture: {
+      type: String,
+    },
     mobileNumber: {
       type: String,
       minLength: 10,

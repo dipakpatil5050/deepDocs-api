@@ -14,4 +14,6 @@ export const {
   JWT_EXPIRED_IN,
   MY_EMAIL,
   MY_EMAIL_PASSWORD,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
 } = process.env;
