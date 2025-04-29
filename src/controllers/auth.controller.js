@@ -73,6 +73,7 @@ export const register = async (req, res, next) => {
 export const LoginWithGoogle = async (req, res, next) => {
   try {
     const { code } = req.query;
+
     if (!code) {
       return errorResponse(res, "Authorization code is required", 400);
     }
@@ -89,6 +90,8 @@ export const LoginWithGoogle = async (req, res, next) => {
       }
     );
 
+    console.log("User res with Google : ", UserRes);
+
     const { email, name, picture } = UserRes.data;
     let user = await User.findOne({ email });
     if (!user) {
@@ -96,6 +99,7 @@ export const LoginWithGoogle = async (req, res, next) => {
         name,
         email,
         profilePicture: picture,
+        authProvider: "google",
       });
     } else {
       if (user.profilePicture !== picture) {

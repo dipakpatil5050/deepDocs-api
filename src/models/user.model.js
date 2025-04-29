@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       minLength: 6,
     },
     profilePicture: {
@@ -30,6 +29,11 @@ const userSchema = new mongoose.Schema(
     mobileNumber: {
       type: String,
       minLength: 10,
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
     },
   },
   {
