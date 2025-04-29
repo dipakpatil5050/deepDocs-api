@@ -89,9 +89,7 @@ export const LoginWithGoogle = async (req, res, next) => {
         },
       }
     );
-
-    console.log("User res with Google : ", UserRes);
-
+ 
     const { email, name, picture } = UserRes.data;
     let user = await User.findOne({ email });
     if (!user) {
