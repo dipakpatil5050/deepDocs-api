@@ -9,6 +9,7 @@ import {
   restoreFromTrash,
   emptyTrash,
   getTrashCards,
+  getArchivedCards,
 } from "../controllers/card.controller.js";
 import { authorize } from "../middlewares/auth.middleware.js";
 
