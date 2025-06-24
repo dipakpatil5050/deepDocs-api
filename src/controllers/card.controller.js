@@ -133,6 +133,24 @@ export const toggleArchiveCard = async (req, res, next) => {
   }
 };
 
+export const getArchivedCards = async (req, res, next) => {
+  try {
+    const archivedCards = await Card.find({
+      userId: req.user._id,
+      archived: true,
+      deletedAt: null,
+    });
+
+    return successResponse(
+      res,
+      archivedCards,
+      "Archived cards fetched successfully"
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const moveToTrash = async (req, res, next) => {
   try {
     const card = await Card.findOneAndUpdate(
